@@ -49,25 +49,21 @@ There are some slightly more advanced designs, that have one or more of these fe
 
 # CPU Features
 
-In order to make the CPU faster, the design will need to implement a number of enhancements and eliminate the slowest components, particulary EPROMS.
-The following are where performance can be improved allowing multiple tasks to be performed within the same clock cycles:
+In order to make the CPU faster, the design will need to implement a degree of parallelism and eliminate the slowest components, particulary EPROMS. To avoid the path of Intel like chips with instruction bloat, it needs to be RISC like.
+The following are where performance can be improved allowing multiple tasks to be performed within the same clock cycles and reducing bottlenecks in the overall design:
 
-## Implement Microcode in SRAM 
-
-We need to Backfill the SRAM's on reset from an EPROM. Result, Microcode code access goes from 120ns+ to 10ns depending on chip selection. Implement on reset, using a special sequencer to perform SP->RD->WR->INC_SP-> repeat sequence, then when complete, switch the buffers for the EPROM to open collector and the SRAM's take effect.
-  
 ## R-BUS
 Rather than a single bus for register access, provide two or more buses, This will give all register's access to a separate R-Bus for register to register moves. We can dedicate a register as the ALU results register maybe R7
 
 ## Instruction Groups
 
-Using an idea from the MIPS CPU, use 2 bits as a "I-Type" field and have four separate Instruction registers (think [74HC139](https://www.ti.com/lit/gpn/SN74HCT139)), control logic can then be implemented on groups of related instructions. This allows both a parallel pipleline design and segregates the control logic needed to handle just the signals for the instructions to be handled by that pipeline.
+Using an idea from the MIPS CPU, use 2 bits as a "I-Type" field and have four separate Instruction registers (think [74HC139](https://www.ti.com/lit/gpn/SN74HCT139)) and 74HC574 Latches, control logic can then be implemented on groups of related instructions. This allows both a parallel pipleline design and segregates the control logic needed to handle just the signals for the instructions to be handled by that pipeline.
 
-ISA details to follow once Assembler project is completed.
+ISA details to follow once Assembler project is completed. But basically 2 bits for the type and the remaining 6 bits for the range of instructions in each group
 
 ## Advanced Registers
 
-Influenced by the MIPS CPU again, my initial design has registers R0 to R7. Having 8 registers means having 3 bits for a source and 3 bits for a destination register format. Rather than have the main controller/sequencer control the registers, it would signal them of an operation and the Register Controller does the task. This allows the Instruction fetch cycle to re-occur directly after the Register Control has been set (it would do it's task(s) during the fetch, decode cycle), then be ready at the Execute cycle for the next register operation if there was one directly after the current one.
+Influenced by the MIPS CPU again, my initial design has registers R0 to R7. Having 8 registers means having 3 bits for a source and 3 bits for a destination register format. Rather than have the main controller/sequencer control the registers, it would signal them of an operation and the Register Controller does the task. This allows the Instruction fetch cycle to re-occur directly after the Register Control has been set (it would do it's task(s) during the fetch, decode cycle), then be ready at the Execute cycle for the next register operation if there was one directly after the current one. With 6 bits for SRC and DST Registers and 2 bits for a type register the design was to 
 
 ### Localised ALU functions
 
@@ -86,7 +82,7 @@ Why does stack RAM need to be part of main memory? I asked myself this many time
 
 On reset (or via the RSP Instruction) the stack is initiallized to 0xFFFF using pull up resistors on the "D" inputs to the counters, the MR and /LOAD signals then sets the address, the output of the counters drivers the address bus for the SRAM. Only a call or return requires the SRAM to present data back to the Main Data Bus.
 
-# Advanced ALU
+## Advanced ALU
 
 With a number of functions integrated into the registers, the ALU can focus on Addition/Subtraction/Division and Multiplication. 
 
@@ -94,6 +90,9 @@ With a number of functions integrated into the registers, the ALU can focus on A
 
 Where designs have used the ALU to implement ADD/SUB operations for the program counter, that functionality would be built into the PC module.
 
+## Implement Microcode in SRAM 
+
+We need to Backfill the SRAM's on reset from an EPROM. Result, Microcode code access goes from 120ns+ to 10ns depending on chip selection. Implement on reset, using a special sequencer to perform SP->RD->WR->INC_SP-> repeat sequence, then when complete, switch the buffers for the EPROM to open collector and the SRAM's take effect.
 
 
 
