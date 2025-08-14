@@ -109,7 +109,8 @@ With a number of functions integrated into the registers, the ALU can focus on A
 
 ## Program Counter
 
-Where designs have used the ALU to implement ADD/SUB operations for the program counter, that functionality would be built into the PC module. The PC Module switches between
+The inital design is for a 16-bit PC giving 64K Code memory and 64K Data memory. I have been reviewing bank swiching designs and even a home built MMU design and will decided on this later.
+Where designs have used the ALU to implement ADD/SUB operations for the program counter, that functionality would be built into the PC module. The PC Module is basically dedicated to Instruction fetching. Still working on the best way of moving data between code space and data space for things like tables and strings/character data that might be needed in a program.
 
 ## Implement Microcode in SRAM 
 
