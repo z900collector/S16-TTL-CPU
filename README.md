@@ -119,6 +119,8 @@ We need to Backfill the SRAM's on reset from an EPROM. Result, Microcode code ac
 
 # ISA
 
+Currently documented in the Assembler: https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md
+
 # Software
 
 As I narrowed down on the width of the CPU, I decided an assembler project would highlight any issues as well as clarify the hardware needed to support the ISA. So I developed an Assembler. 
