@@ -1,5 +1,5 @@
 # S16-TTL-CPU
-A superscaller TTL CPU using HC/HCT Logic - 16 Bit version
+A superscalar TTL CPU using HC/HCT Logic - 16 Bit version
 
 # Introduction
 
@@ -7,25 +7,25 @@ A superscaller TTL CPU using HC/HCT Logic - 16 Bit version
 
 # The current state of most TTL CPU Projects
 
-Having studied a huge range of 8/16 and the odd 32 bit TTL projects on offer, I decided to do something more advanced than the current designs. 
+Having studied a huge range of 8/16 and the odd 32-bit TTL projects on offer, I decided to do something more advanced than the current designs. 
 
 Most simple TTL CPU designs have the following:
 
-* a single data bus
-* a single control unit
+* A single data bus
+* A single control unit
 * EPROM/EEPROM based microcode design
 * Single Instruction Register (IR)
-* basic latched registers
+* Basic latched registers
 * Stack Pointer RAM shared with general RAM.
 * Limited memory range
-* Fixed Machine Cycle times (i.e T0 - T1 - T2 -T3 etc) for ALL instructions.
-* Sligtly more advanced designs have a modified harvard architecture. With separate RAM and EPROM address spaces.
-* Low clock frequency typicall < 4MHz
+* Fixed Machine Cycle times (i.e. T0 - T1 - T2 -T3 etc) for ALL instructions.
+* Slightly more advanced designs have a modified Harvard Architecture. With separate RAM and EPROM address spaces.
+* Low clock frequency typical < 4MHz
 
 However, there are huge bottlenecks in these designs, **they do work and work well** for what they are but I wanted something:
-* faster >25Mhz <50Mhz,
-* more sophisticated design and
-* more modular in it's design.
+* Faster >25Mhz <50Mhz,
+* More sophisticated design and
+* More modular in it's design.
 
 ## The Issues with current designs
 
@@ -64,15 +64,15 @@ In order to make the CPU faster, the design will need to implement a degree of p
 The following are where performance can be improved allowing multiple tasks to be performed within the same clock cycles and reducing bottlenecks in the overall design:
 
 ## R-BUS
-Rather than a single bus for register access, provide two or more buses, This will give all register's access to a separate register bus called "R-Bus" for register to register moves. 
+Rather than a single bus for register access, provide two or more buses, this will give all register's access to a separate register bus called "R-Bus" for register-to-register moves. 
 
 For arithmetic ALU operations, We can either dedicate a register as the ALU results register (maybe R7) or implement an "A-Bus" for ALU results moves. That idea is still being worked out. But using the A-Buss and R-Bus as inputs to the ALU and the R7 as the results register looks very do-able on paper.
 
 ## Instruction Groups
 
-Using an idea from the MIPS CPU, use 2 bits as a "I-Type" field and have four separate Instruction registers (think [74HC139](https://www.ti.com/lit/gpn/SN74HCT139)) and 74HC574 Latches, control logic can then be implemented on groups of related instructions. This allows both a parallel pipleline design and segregates the control logic needed to handle just the signals for the instructions to be handled by that pipeline.
+Using an idea from the MIPS CPU, use 2 bits as a "I-Type" field and have four separate Instruction registers (think [74HC139](https://www.ti.com/lit/gpn/SN74HCT139)) and 74HC574 Latches, control logic can then be implemented on groups of related instructions. This allows both a parallel pipeline design and segregates the control logic needed to handle just the signals for the instructions to be handled by that pipeline.
 
-The ISA details will be published soon, once the Assembler project is completed. But basically 2 bits for the I-Type and the remaining 6 bits for the range of instructions in each group gives 8 bits for Instructions and add in 6 bits for the register selection leaves 2 bits in the first 16 bit word. Immediate values could be an additional fetch if the instruction requires an immediate value.
+The ISA details will be published soon, once the Assembler project is completed. But basically 2 bits for the I-Type and the remaining 6 bits for the range of instructions in each group gives 8 bits for Instructions and add in 6 bits for the register selection leaves 2 bits in the first 16-bit word. Immediate values could be an additional fetch if the instruction requires an immediate value.
 
 So far the Identified Groups are:
 * Miscellaneous Instructions (like NOP)
@@ -82,7 +82,7 @@ So far the Identified Groups are:
 
 ## Advanced Registers
 
-Influenced by the MIPS CPU again, my initial design has registers R0 to R7. Having 8 registers means having 3 bits for a source and 3 bits for a destination register format. Rather than have the Main Controller/Sequencer (MCS) control the registers, the MCS would signal the registers of an operation via a Register Control Buss and the Register Controller/Sequencer (RCS) does the task. This allows the Instruction fetch cycle to re-occur directly after the RCS takes over (it would do it's task(s) during the fetch, decode cycle), then be ready at the Execute cycle for the next register operation if there was one directly after the current one. 
+Influenced by the MIPS CPU again, my initial design has registers R0 to R7. Having 8 registers means having 3 bits for a source and 3 bits for a destination register format. Rather than have the Main Controller/Sequencer (MCS) control the registers, the MCS would signal the registers of an operation via a Register Control Bus and the Register Controller/Sequencer (RCS) does the task. This allows the Instruction fetch cycle to re-occur directly after the RCS takes over (it would do it's task(s) during the fetch, decode cycle), then be ready at the Execute cycle for the next register operation if there was one directly after the current one. 
 
 ### Localised ALU functions
 
@@ -92,16 +92,16 @@ Registers R0-R7 will include the ability to perform the following instructions t
 * Shifts / Rotates
 * Zero / Invert / Bitwise OR / AND / XOR operations
 
-The flags from these operations would be pushed to a global flags register which is where the Instructionn Registers would look if needed.
+The flags from these operations would be pushed to a global flags register which is where the Instruction Registers would look if needed.
 
 ### Secondary register latch
-The registers would have a secondary register latch to enable the basic ALU operations to be performed lcoally, the 2nd latch is loaded by an XFER instruction (XFER Rs, Rd) This would be different to a LD instruction which moves data into the "A" Latch of a Register. The XFER would load "A" and "B" at the same time. A logic operation would then be an XFER, followed by an LD, followed by the ALU operation. Results get written back to the "A" latch or if coded, transfered to another register using the R-BUS. The key points are the XFER is in progress as the LD is being fetched and decoded, then at the end of the LD, the ALu operation could execute. As it is occuring, another Instuction fetch is already in progress.
+The registers would have a secondary register latch to enable the basic ALU operations to be performed locally, the 2nd latch is loaded by an XFER instruction (XFER Rs, Rd) This would be different to a LD instruction which moves data into the "A" Latch of a Register. The XFER would load "A" and "B" at the same time. A logic operation would then be an XFER, followed by an LD, followed by the ALU operation. Results get written back to the "A" latch or if coded, transferred to another register using the R-BUS. The key points are the XFER is in progress as the LD is being fetched and decoded, then at the end of the LD, the ALU operation could execute. As it is occurring, another Instruction fetch is already in progress.
 
 ## Separate Stack RAM
 
-Why does stack RAM need to be part of main memory? I asked myself this many times, logcally a Stack is built from the top down and RAM usage grows upwards. If they meet, you are in trouble, but generally they are separate ( conceptually ) but share the same chips. If you split the stack RAM into a separate exclusive address space and have the SP register output to a "local" SP bus via some counter chips (74HC161/74HC191/74HC193), then include the control logic to manage PUSH, POP, CALL, RET and RSP (Reset SP) then you can do stack operations from registers while still having the Instruction Data Bus fetch and process more instructions.
+Why does stack RAM need to be part of main memory? I asked myself this many times, logically a Stack is built from the top down and RAM usage grows upwards. If they meet, you are in trouble, but generally they are separate (conceptually) but share the same chips. If you split the stack RAM into a separate exclusive address space and have the SP register output to a "local" SP bus via some counter chips (74HC161/74HC191/74HC193), then include the control logic to manage PUSH, POP, CALL, RET and RSP (Reset SP) then you can do stack operations from registers while still having the Instruction Data Bus fetch and process more instructions.
 
-On reset (or via the RSP Instruction) the stack is initiallized to 0xFFFF using pull up resistors on the "D" inputs to the counters, the MR and /LOAD signals then sets the address, the output of the counters drivers the address bus for the SRAM. Only a CALL or RETurn requires the SRAM to present data back to the Main Data Bus. The PUSH and POP would be register operations using the R-Bus.
+On reset (or via the RSP Instruction) the stack is initialized to 0xFFFF using pull up resistors on the "D" inputs to the counters, the MR and /LOAD signals then set the address, the output of the counters drivers the address bus for the SRAM. Only a CALL or RETurn requires the SRAM to present data back to the Main Data Bus. The PUSH and POP instructions would be "register" operations using the R-Bus.
 
 ## Advanced ALU
 
