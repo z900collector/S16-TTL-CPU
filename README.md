@@ -17,6 +17,7 @@ Most simple TTL CPU designs have the following:
 * Single Instruction Register (IR)
 * basic latched registers
 * Stack Pointer RAM shared with general RAM.
+* Limited memory range
 * Fixed Machine Cycle times (i.e T0 - T1 - T2 -T3 etc) for ALL instructions.
 * Sligtly more advanced designs have a modified harvard architecture. With separate RAM and EPROM address spaces. 
 
@@ -31,8 +32,7 @@ In basic point form, the issues that are common to most TTL CPU designs are:
 
 * EPROMs have delay times of upwards of 100-150ns or worse.
 * Single Bus designs cause a bottleneck, particularly with ALU operations.
-* ALU operations often rely on [74181](https://www.righto.com/2017/03/inside-vintage-74181-alu-chip-how-it.html)
-* Or the 74283 4-bit binary adder with support chips.
+* ALU operations often rely on [74181](https://www.righto.com/2017/03/inside-vintage-74181-alu-chip-how-it.html) or the [74283](https://www.ti.com/lit/gpn/SN54S283) 4-bit binary adder with support chips.
 * Single Instruction fetch/decode and execute phase.
 * Single control unit with complex control line distribution.
 * Registers as basic latches.
@@ -40,9 +40,10 @@ In basic point form, the issues that are common to most TTL CPU designs are:
 There are some slightly more advanced designs, that have one or more of these features:
 
 * An ALU bus directly connected to some of the system registers.
-* Registers implemented using counter chips allowing Increment / Decrement perations.
+* Registers implemented using counter chips allowing Increment / Decrement operations.
 * ALU implemented as logic gates with mux chips removing the reliance on vintage End of life chips like the 74181
-* Dual stage Pipeline with simple logic decoding
+* Dual stage Pipeline with simple logic decoding.
+* MMU like features to address memory beyond Address Buss range.
 
 # CPU Features
 
