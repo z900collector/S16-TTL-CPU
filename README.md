@@ -3,7 +3,7 @@ A superscalar TTL CPU using HC/HCT Logic - 16 Bit version
 
 # Introduction
 
-**TODO**
+I have been inspired to design this TTL based CPU after decades of building and writting code for embedded systems. I started in 1976 when the z80 came out and worked on a range of CPU's up till the around the 2000's when I focused on my  Systems Engineering career and left smaller processors behind. In 2024 I saw a TTL CPU page and was wrapped, prior to starting design I researched all the available designs on the Internet to get a clear view of what has been built before, an understanding of the history of TTL Home Brew Computers and the philosophy that motivates people to spend a huge amount of hours and brain power on designing and building these projects.
 
 # The current state of most TTL CPU Projects
 
@@ -24,8 +24,8 @@ Most simple TTL CPU designs have the following:
 
 However, there are huge bottlenecks in these designs, **they do work and work well** for what they are but I wanted something:
 * Faster >25Mhz <50Mhz,
-* More sophisticated design and
-* More modular in it's design.
+* More sophisticated design (RISC based) and
+* More modular in it's design, think "Functional Units".
 
 ## The Issues with current designs
 
@@ -34,9 +34,10 @@ In basic point form, the issues that are common to most TTL CPU designs are:
 * EPROMs have delay times of upwards of 100-150ns or worse thus limiting clock timing.
 * Single Bus designs cause a bottleneck, particularly with ALU operations.
 * ALU operations often rely on [74181](https://www.righto.com/2017/03/inside-vintage-74181-alu-chip-how-it.html) or the [74283](https://www.ti.com/lit/gpn/SN54S283) 4-bit binary adder with support chips.
-* Most have a single Instruction fetch/decode and execute phase.
-* Single control unit with complex control line distribution.
+* Most have a single Instruction fetch/decode and execute phase with no overlap.
+* Single control unit with complex control line distribution. In most cases the need for more control signals means adding more EPROMS to breakout the individual signals.
 * Registers as basic latches without any additional logic capability.
+* 
 
 There are some slightly more advanced designs, that have one or more of these features:
 
