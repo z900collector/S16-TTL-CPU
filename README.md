@@ -24,7 +24,7 @@ Most simple TTL CPU designs have the following:
 
 However, there are huge bottlenecks in these designs, **they do work and work well** for what they are but I wanted something:
 * Faster >25Mhz <50Mhz,
-* More sophisticated design (RISC based) and
+* More sophisticated design (take as many features from RISC based designs) and
 * More modular in it's design, think "Functional Units".
 
 ## The Issues with current designs
@@ -50,32 +50,40 @@ There are some slightly more advanced designs, that have one or more of these fe
 
 ## Philosophical Goals
 
-* Use 74 series TTL chips where possible in the core CPU design and Implementation.
+* Use 74xx series TTL chips where possible in the core CPU design and Implementation.
 * Aim for a clean and elegant design where possible.
 * As RISC like as possible.
 * Clean/Uniform instruction set design.
-* Modular approach
+* Modular approach rather than central control.
 
 Most designs have similar goals to this so it fits within the Home Brew TTL Computer design ideals.
 
 # CPU Features
 
-In order to make the CPU faster, the design will need to implement a degree of parallelism and eliminate the slowest components, particulary EPROMS. To avoid the path of Intel like chips with instruction bloat, it needs to be RISC like. To perform data writes simulatneously to code fetches it need sto implement a Harvard Architecture design.
+In order to make the CPU faster, the design will need to implement a degree of parallelism and eliminate the slowest components, particulary EPROMS. To avoid the path of Intel like chips with instruction bloat, it needs to be RISC like. 
 
-The following are where performance can be improved allowing multiple tasks to be performed within the same clock cycles and reducing bottlenecks in the overall design:
+To perform data writes simultaneously to code fetches, the CPU needs to implement a [Harvard Architecture](https://en.wikipedia.org/wiki/Harvard_architecture) design with a separate code and RAM space.
+
+The following topics are where performance can be improved allowing multiple tasks to be performed within the same clock cycles and reducing bottlenecks in the overall design:
 
 ## R-BUS
-Rather than a single bus for register access, provide two or more buses, this will give all register's access to a separate register bus called "R-Bus" for register-to-register moves. 
+Rather than a single bus for register access, I am aiming to provide two (or more) data buses, this will give all register's access to a separate register bus called "R-Bus" for register-to-register moves. 
 
-For arithmetic ALU operations, We can either dedicate a register as the ALU results register (maybe R7) or implement an "A-Bus" for ALU results moves. That idea is still being worked out. But using the A-Buss and R-Bus as inputs to the ALU and the R7 as the results register looks very do-able on paper.
+For arithmetic ALU operations, I can either dedicate a register as the ALU results register (maybe R7) or implement an "A-Bus" for ALU results moves on its own bus, the downside is more latches, buffers and signal lines. That idea is still being worked out. But using the A-Buss and R-Bus as inputs to the ALU and the R7 as the results register looks very do-able on paper.
 
 ## Instruction Groups
 
-Using an idea from the MIPS CPU, use 2 bits as a "I-Type" field and have four separate Instruction registers (think [74HC139](https://www.ti.com/lit/gpn/SN74HCT139)) and 74HC574 Latches, control logic can then be implemented on groups of related instructions. This allows both a parallel pipeline design and segregates the control logic needed to handle just the signals for the instructions to be handled by that pipeline.
+Using an idea from the MIPS CPU, I have aimed for a fixed size instruction set that uses 2 bits as a "I-Type" field and have four separate Instruction registers (from a hardware perspective, think [74HC139](https://www.ti.com/lit/gpn/SN74HCT139) and 74HC574 Latches). This gives each of the four groups of instructions 6 bits or 64 different instructions per group.
+
+By grouping related Instructions together, the control logic can then be implemented in logic gates for many instructions without needing a decoding matrix. The decoding can also be passe donto the functional unit that the instructions apply to.
+This allows both a parallel pipeline design where instruction fetching continues on each 2nd cycle (unless paused) and segregates the control logic needed to handle just the signals for the instructions to be handled by that pipeline.
 
 The ISA details will be published soon, once the Assembler project is completed. But basically 2 bits for the I-Type and the remaining 6 bits for the range of instructions in each group gives 8 bits for Instructions and add in 6 bits for the register selection leaves 2 bits in the first 16-bit word. Immediate values could be an additional fetch if the instruction requires an immediate value.
 
+The ISA documentation is here: [isa.md](https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md)
+
 So far the Identified Groups are:
+
 * Miscellaneous Instructions (like NOP)
 * Register Operations
 * ALU Operations
@@ -83,7 +91,11 @@ So far the Identified Groups are:
 
 ## Advanced Registers
 
-Influenced by the MIPS CPU again, my initial design has registers R0 to R7. Having 8 registers means having 3 bits for a source and 3 bits for a destination register format. Rather than have the Main Controller/Sequencer (MCS) control the registers, the MCS would signal the registers of an operation via a Register Control Bus and the Register Controller/Sequencer (RCS) does the task. This allows the Instruction fetch cycle to re-occur directly after the RCS takes over (it would do it's task(s) during the fetch, decode cycle), then be ready at the Execute cycle for the next register operation if there was one directly after the current one. 
+Influenced by the MIPS CPU again, my initial design has registers R0 to R7. Having eight (8) registers means having 3 bits for a source and 3 bits for a destination register format. Rather than have the Main Controller/Sequencer (MCS) control the registers, the MCS would signal the registers of an operation via a Register Control Bus and the Register Controller/Sequencer (RCS) does the task. This allows the Instruction fetch cycle to re-occur directly after the RCS takes over (it would do it's task(s) during the fetch, decode cycle), then be ready at the Execute cycle for the next register operation if there was one directly after the current one. 
+
+### Possible Issues ###
+
+There maybe timing issues to still debug but once I build the register modules, the design is 95% complete and is ready to prototype.
 
 ### Localised ALU functions
 
@@ -96,13 +108,18 @@ Registers R0-R7 will include the ability to perform the following instructions t
 The flags from these operations would be pushed to a global flags register which is where the Instruction Registers would look if needed.
 
 ### Secondary register latch
-The registers would have a secondary register latch to enable the basic ALU operations to be performed locally, the 2nd latch is loaded by an XFER instruction (XFER Rs, Rd) This would be different to a LD instruction which moves data into the "A" Latch of a Register. The XFER would load "A" and "B" at the same time. A logic operation would then be an XFER, followed by an LD, followed by the ALU operation. Results get written back to the "A" latch or if coded, transferred to another register using the R-BUS. The key points are the XFER is in progress as the LD is being fetched and decoded, then at the end of the LD, the ALU operation could execute. As it is occurring, another Instruction fetch is already in progress.
+
+The registers would have a secondary register latch to enable the basic ALU operations to be performed locally, the 2nd latch is loaded by an XFER instruction (XFER Rs, Rd) This would be different to a "LD" instruction which moves data into the "A" Latch of a Register. The XFER would load "A" and "B" at the same time. A logic operation would then be an XFER, followed by an LD, followed by the ALU operation. Results get written back to the "A" latch or if coded, transferred to another register using the R-BUS. The key points are the XFER is in progress as the LD is being fetched and decoded, then at the end of the LD, the ALU operation could execute. As it is occurring, another Instruction fetch is already in progress.
 
 ## Separate Stack RAM
 
-Why does stack RAM need to be part of main memory? I asked myself this many times, logically a Stack is built from the top down and RAM usage grows upwards. If they meet, you are in trouble, but generally they are separate (conceptually) but share the same chips. If you split the stack RAM into a separate exclusive address space and have the SP register output to a "local" SP bus via some counter chips (74HC161/74HC191/74HC193), then include the control logic to manage PUSH, POP, CALL, RET and RSP (Reset SP) then you can do stack operations from registers while still having the Instruction Data Bus fetch and process more instructions.
+Why does stack RAM need to be part of main memory? I asked myself this many times, logically a Stack is built from the top down and RAM usage grows upwards. If they meet, you are in trouble, but generally they are separate (conceptually) but share the same chips. If you split the stack RAM into a separate exclusive address space and have the SP register output to a "local" SP bus via some counter chips (74HC161/74HC191/74HC193), then include the control logic to manage PUSH, POP, CALL, RET and RSP (Reset SP) then you can do stack operations from registers while still having the Instruction Data Bus fetch and process more instructions. 
 
-On reset (or via the RSP Instruction) the stack is initialized to 0xFFFF using pull up resistors on the "D" inputs to the counters, the MR and /LOAD signals then set the address, the output of the counters drivers the address bus for the SRAM. Only a CALL or RETurn requires the SRAM to present data back to the Main Data Bus. The PUSH and POP instructions would be "register" operations using the R-Bus.
+On reset (or via the RSP Instruction) the stack is initialized to 0xFFFF using pull up resistors on the "D" inputs to the counters, the MR and /LOAD signals then set the address, the output of the counter chips drive the address bus for the SRAM. Only a CALL or RETurn requires the SRAM to present data back to the Main Data Bus. The PUSH and POP instructions would be "register" operations using the R-Bus.
+
+The SP would be a separate "functional Unit" and can incorporate the logic needed to manage moving data around.
+
+The design of the SP is 80% there, I need to commit my sketches to KiCad and do some block diagrams.
 
 ## Advanced ALU
 
