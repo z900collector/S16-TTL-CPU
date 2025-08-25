@@ -37,7 +37,7 @@ In basic point form, the issues that are common to most TTL CPU designs are:
 * Most have a single Instruction fetch/decode and execute phase with no overlap.
 * Single control unit with complex control line distribution. In most cases the need for more control signals means adding more EPROMS to breakout the individual signals.
 * Registers as basic latches without any additional logic capability.
-* 
+* RAM, Code and Stack in one address space.
 
 There are some slightly more advanced designs, that have one or more of these features:
 
@@ -46,7 +46,7 @@ There are some slightly more advanced designs, that have one or more of these fe
 * ALU implemented as logic gates with mux chips removing the reliance on vintage End of life chips like the 74181
 * Dual stage Pipeline with simple logic decoding.
 * Dual bus support - limited but still usable.
-* MMU like features to address memory beyond Address Buss range.
+* MMU like features to address memory beyond 16-bit Address Bus range.
 
 ## Philosophical Goals
 
@@ -55,14 +55,20 @@ There are some slightly more advanced designs, that have one or more of these fe
 * As RISC like as possible.
 * Clean/Uniform instruction set design.
 * Modular approach rather than central control.
+* Modified Harvard Architecture - separate code, Stack and User RAM.
+* Well defined register usage similar to RISC-V and MIPs but not a direct implementation of tham.
 
 Most designs have similar goals to this so it fits within the Home Brew TTL Computer design ideals.
 
 # CPU Features
 
-In order to make the CPU faster, the design will need to implement a degree of parallelism and eliminate the slowest components, particulary EPROMS. To avoid the path of Intel like chips with instruction bloat, it needs to be RISC like. 
+In order to make the CPU faster, the design will need to implement a degree of parallelism and eliminate the slowest components, particulary EPROMS. 
 
-To perform data writes simultaneously to code fetches, the CPU needs to implement a [Harvard Architecture](https://en.wikipedia.org/wiki/Harvard_architecture) design with a separate code and RAM space.
+To avoid the path of CISC designs (think instruction bloat), it needs to be RISC like. 
+
+To perform data writes simultaneously to code fetches, the CPU needs to implement a modified [Harvard Architecture](https://en.wikipedia.org/wiki/Harvard_architecture) design with a separate code and RAM space.
+
+For something different, the Stack space will also have it's own RAM space separate to code and User space.
 
 The following topics are where performance can be improved allowing multiple tasks to be performed within the same clock cycles and reducing bottlenecks in the overall design:
 
@@ -70,6 +76,8 @@ The following topics are where performance can be improved allowing multiple tas
 Rather than a single bus for register access, I am aiming to provide two (or more) data buses, this will give all register's access to a separate register bus called "R-Bus" for register-to-register moves. 
 
 For arithmetic ALU operations, I can either dedicate a register as the ALU results register (maybe R7) or implement an "A-Bus" for ALU results moves on its own bus, the downside is more latches, buffers and signal lines. That idea is still being worked out. But using the A-Buss and R-Bus as inputs to the ALU and the R7 as the results register looks very do-able on paper.
+
+August 2025 - Decided to ditch the A-Bus for the time being.
 
 ## Instruction Groups
 
@@ -113,13 +121,15 @@ The registers would have a secondary register latch to enable the basic ALU oper
 
 ## Separate Stack RAM
 
-Why does stack RAM need to be part of main memory? I asked myself this many times, logically a Stack is built from the top down and RAM usage grows upwards. If they meet, you are in trouble, but generally they are separate (conceptually) but share the same chips. If you split the stack RAM into a separate exclusive address space and have the SP register output to a "local" SP bus via some counter chips (74HC161/74HC191/74HC193), then include the control logic to manage PUSH, POP, CALL, RET and RSP (Reset SP) then you can do stack operations from registers while still having the Instruction Data Bus fetch and process more instructions. 
+Why does stack RAM need to be part of main memory? I asked myself this many times, logically a Stack is built from the top of RAM and works down as the stack grows and RAM usage grows upwards. If they meet, you are in trouble, but generally they are separate (conceptually) but share the same chips. If you split the stack RAM into a separate exclusive address space and have the SP register output to a "local" SP bus via some counter chips (74HC161/74HC191/74HC193), then include the control logic to manage PUSH, POP, CALL, RET and RSP (Reset SP) then you can do stack operations from registers while still having the Instruction Data Bus fetch and process more instructions, this should increase performance on stack operations. 
 
-On reset (or via the RSP Instruction) the stack is initialized to 0xFFFF using pull up resistors on the "D" inputs to the counters, the MR and /LOAD signals then set the address, the output of the counter chips drive the address bus for the SRAM. Only a CALL or RETurn requires the SRAM to present data back to the Main Data Bus. The PUSH and POP instructions would be "register" operations using the R-Bus.
+### Theory
 
-The SP would be a separate "functional Unit" and can incorporate the logic needed to manage moving data around.
+On reset (or via the RSP Instruction) the stack is initialized to 0xFFFF using pull up resistors on the "D" inputs to the counters, the MR and /LOAD signals then set that address, the output of the counter chips drive the address bus for the SRAM. Only a CALL or RETurn requires the SRAM to present data back to the Main Data Bus. The PUSH and POP instructions would be "register" operations using the R-Bus.
 
-The design of the SP is 80% there, I need to commit my sketches to KiCad and do some block diagrams.
+The SP would be a separate "functional Unit" and can incorporate the control logic needed to manage moving data around.
+
+The design of the SP is 80% there, I need to commit my sketches to KiCad and do some block diagrams. I have also started breadboarding the SP Module.
 
 ## Advanced ALU
 
@@ -132,8 +142,12 @@ Where designs have used the ALU to implement ADD/SUB operations for the program 
 
 ## Implement Microcode in SRAM 
 
-We need to Backfill the SRAM's on reset from an EPROM. Result, Microcode code access goes from 120ns+ to 10ns depending on chip selection. Implement on reset, using a special sequencer to perform SP->RD->WR->INC_SP-> repeat sequence, then when complete, switch the buffers for the EPROM to open collector and the SRAM's take effect.
+Due to the latency of EEPROMs, the use of 10ns SRAMs would increase both code execution and even instruction decoding if I use classic designs.
+We would need to backfill the SRAM's on reset from an EPROM. The result, Microcode code access goes from 120ns+ to 10ns depending on chip selection. 
 
+### Theory
+
+Implemented on reset, using a special sequencer to perform SP->RD->WR->INC_SP-> repeat sequence, then when complete, switch the buffers for the EPROM to open collector and the SRAM's take effect.
 
 
 # ISA
