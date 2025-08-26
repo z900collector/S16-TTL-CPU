@@ -66,7 +66,7 @@ In order to make the CPU faster, the design will need to implement a degree of p
 
 To avoid the path of CISC designs (think instruction bloat), it needs to be RISC like. 
 
-To perform data writes simultaneously to code fetches, the CPU needs to implement a modified [Harvard Architecture](https://en.wikipedia.org/wiki/Harvard_architecture) design with a separate code and RAM space.
+To perform data writes simultaneously to code fetches, the CPU needs to implement a modified [Harvard Architecture](https://en.wikipedia.org/wiki/Harvard_architecture) design with a separate code and RAM space. Moving code to Register can be achieved using the MR instruction where as LD and ST instructions Load and Store to RAM
 
 For something different, the Stack space will also have it's own RAM space separate to code and User space.
 
