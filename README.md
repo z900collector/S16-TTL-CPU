@@ -75,7 +75,7 @@ The following topics are where performance can be improved allowing multiple tas
 ## R-BUS
 Rather than a single bus for register access, I am aiming to provide two (or more) data buses, this will give all register's access to a separate register bus called "R-Bus" for register-to-register moves. 
 
-For arithmetic ALU operations, I can either dedicate a register as the ALU results register (maybe R7) or implement an "A-Bus" for ALU results moves on its own bus, the downside is more latches, buffers and signal lines. That idea is still being worked out. But using the A-Buss and R-Bus as inputs to the ALU and the R7 as the results register looks very do-able on paper.
+For arithmetic ALU operations, I can either dedicate a register as the ALU results register (maybe R7) or implement an "A-Bus" for ALU results moves on its own bus, the downside is more latches, buffers and signal lines. That idea is still being worked out. But using the A-Bus and R-Bus as inputs to the ALU and the R7 as the results register looks very do-able on paper. Using the normal Data Bus and the R-Bus is also do-able.
 
 August 2025 - Decided to ditch the A-Bus for the time being.
 
