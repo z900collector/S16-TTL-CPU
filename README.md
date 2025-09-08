@@ -144,13 +144,15 @@ With a number of functions integrated into the registers, the ALU can focus on A
 
 ## Program Counter
 
-The inital design is for a 16-bit PC giving 64K Code memory and 64K Data memory. I have been reviewing bank swiching designs and even a home built MMU design and will decided on this later.
-Where designs have used the ALU to implement ADD/SUB operations for the program counter, that functionality would be built into the PC module. The PC Module is basically dedicated to Instruction fetching. Still working on the best way of moving data between code space and data space for things like tables and strings/character data that might be needed in a program.
+The inital design is for a 16-bit PC giving 64K Code memory and 64K Data memory. I have been reviewing bank switching designs and even a home built MMU design and will decided on this later. The initial block diagram above does not include the PC Add/sub logic for relative addressing, that part is still in sketch stage. I'm not happy with designs that use the 74181 chips to add to the PC, there must be a better way!
+Where designs have used the ALU to implement ADD/SUB operations for the program counter, that functionality would be built into the PC module. The PC Module is basically dedicated to Instruction fetching. 
+
+I am still working on the best way of moving data between code space and data space, for the time being the LD and MV instructions can do this as the PC and MAR are separate. I could use a move coplex instruction to move blocks of data for things like tables and strings/character data that might be needed in a program.
 
 ## Implement Microcode in SRAM 
 
 Due to the latency of EEPROMs, the use of 10ns SRAMs would increase both code execution and even instruction decoding if I use classic designs.
-We would need to backfill the SRAM's on reset from an EPROM. The result, Microcode code access goes from 120ns+ to 10ns depending on chip selection. 
+We would need to backfill the SRAM's on reset from an EPROM. The result, Microcode code access goes from 120ns+ to 10ns depending on chip selection. My initial sketchs appear to be valid, but I will know when I bread board it and decided on the best way to do this on reset.
 
 ### Theory
 
