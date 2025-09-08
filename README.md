@@ -80,7 +80,7 @@ For arithmetic ALU operations, I can either dedicate a register as the ALU resul
 August 2025 - Decided to ditch the A-Bus for the time being.
 
 Current design Idea
-![S16-TTL-CPU](img/TTL-CPU-2025-09-05.jpg?raw=true)
+![S16-TTL-CPU](TTL-CPU-2025-09-05.jpg?raw=true)
 
 ## Instruction Groups
 
