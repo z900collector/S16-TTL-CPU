@@ -79,6 +79,9 @@ For arithmetic ALU operations, I can either dedicate a register as the ALU resul
 
 August 2025 - Decided to ditch the A-Bus for the time being.
 
+Current design Idea
+![S16-TTL-CPU](img/TTL-CPU-2025-09-05.jpg?raw=true)
+
 ## Instruction Groups
 
 Using an idea from the MIPS CPU, I have aimed for a fixed size instruction set that uses 2 bits as a "I-Type" field and have four separate Instruction registers (from a hardware perspective, think [74HC139](https://www.ti.com/lit/gpn/SN74HCT139) and 74HC574 Latches). This gives each of the four groups of instructions 6 bits or 64 different instructions per group.
