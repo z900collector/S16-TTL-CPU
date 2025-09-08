@@ -73,13 +73,13 @@ For something different, the Stack space will also have it's own RAM space separ
 The following topics are where performance can be improved allowing multiple tasks to be performed within the same clock cycles and reducing bottlenecks in the overall design:
 
 ## R-BUS
-Rather than a single bus for register access, I am aiming to provide two (or more) data buses, this will give all register's access to a separate register bus called "R-Bus" for register-to-register moves. 
+Rather than a single bus for register access, I am aiming to provide two data buses, the conventional D-Bus and a separate register bus called "R-Bus" for register-to-register moves. This also includes moving data to and from the Stack Pointer Register and Program Counter Register.
 
-For arithmetic ALU operations, I can either dedicate a register as the ALU results register (maybe R7) or implement an "A-Bus" for ALU results moves on its own bus, the downside is more latches, buffers and signal lines. That idea is still being worked out. But using the A-Bus and R-Bus as inputs to the ALU and the R7 as the results register looks very do-able on paper. Using the normal Data Bus and the R-Bus is also do-able.
+The Register will also include an Increment/Decrement capability to increase the speed of loop counting and Rotate/Shift Operations. Since logic gates are relatively cheap, adding bitwise logical operations such as AND, OR, XOR etc will also enhance each register.
 
-August 2025 - Decided to ditch the A-Bus for the time being.
+For arithmetic ALU operations like ADD, SUB, DIV and MUL, I can dedicate a register as the ALU results register (maybe R7) and use the D-Bus and R-Bus as inputs to the Arithmetic ALU like other designs.
 
-Current design Idea
+Current design Idea as of September 2025. I still need to drop this onto a bread board and complete the register control logic.
 ![S16-TTL-CPU](TTL-CPU-2025-09-05.jpg?raw=true)
 
 ## Instruction Groups
