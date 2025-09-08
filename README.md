@@ -60,6 +60,10 @@ There are some slightly more advanced designs, that have one or more of these fe
 
 Most designs have similar goals to this so it fits within the Home Brew TTL Computer design ideals.
 
+# Block Diagram (Still in design stage)
+
+![S16-TTL-CPU](Block-Diagram-2025-09-05.jpg?raw=true)
+
 # CPU Features
 
 In order to make the CPU faster, the design will need to implement a degree of parallelism and eliminate the slowest components, particulary EPROMS. 
