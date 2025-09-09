@@ -84,7 +84,7 @@ The Register will also include an Increment/Decrement capability to increase the
 For arithmetic ALU operations like ADD, SUB, DIV and MUL, I can dedicate a register as the ALU results register (maybe R7) and use the D-Bus and R-Bus as inputs to the Arithmetic ALU like other designs.
 
 Current design Idea as of September 2025. I still need to drop this onto a bread board and complete the register control logic.
-![S16-TTL-CPU](TTL-CPU-2025-09-05.jpg?raw=true)
+![S16-TTL-CPU](REG-Signals-2025-09-09.jpg?raw=true)
 
 ## Instruction Groups
 
