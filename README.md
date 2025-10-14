@@ -62,7 +62,7 @@ Most designs have similar goals to this so it fits within the Home Brew TTL Comp
 
 # Block Diagram (Still in design stage)
 
-![S16-TTL-CPU](Block-Diagram-2025-10-14.jpg?raw=true)
+![S16-TTL-CPU](Block-Diagram-2025-10-14.png?raw=true)
 
 # CPU Features
 
