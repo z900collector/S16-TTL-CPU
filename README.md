@@ -1,9 +1,11 @@
 # S16-TTL-CPU
 A superscalar TTL CPU using HC/HCT Logic - 16 Bit version
 
+Updated 2026-01-28
+
 # Introduction
 
-I have been inspired to design this TTL based CPU after decades of building and writting code for embedded systems. I started in 1976 when the z80 came out and worked on a range of CPU's up till the around the 2000's when I focused on my  Systems Engineering career and left smaller processors behind. In 2024 I saw a TTL CPU page and was wrapped, prior to starting design I researched all the available designs on the Internet to get a clear view of what has been built before, an understanding of the history of TTL Home Brew Computers and the philosophy that motivates people to spend a huge amount of hours and brain power on designing and building these projects.
+I have been inspired to design this TTL based CPU after decades of building and writting code for embedded systems. I started in 1976 when the z80 came out and worked on a range of CPU's up till the around the 2000's when I focused on my  Systems Engineering career and left smaller processors behind. In 2024 I saw a TTL CPU page and was wrapped, prior to starting this design I researched all the available designs on the Internet to get a clear view of what has been built before, an understanding of the history of TTL Home Brew Computers and the philosophy that motivates people to spend a huge amount of hours and brain power on designing and building these projects.
 
 # The current state of most TTL CPU Projects
 
@@ -23,7 +25,7 @@ Most simple TTL CPU designs have the following:
 * Low clock frequency typical < 4MHz
 
 However, there are huge bottlenecks in these designs, **they do work and work well** for what they are but I wanted something:
-* Faster >25Mhz <50Mhz,
+* Faster >20Mhz <50Mhz,
 * More sophisticated design (take as many features from RISC based designs) and
 * More modular in it's design, think "Functional Units".
 
@@ -43,20 +45,20 @@ There are some slightly more advanced designs, that have one or more of these fe
 
 * An ALU bus directly connected to some of the system registers.
 * Registers implemented using counter chips allowing Increment / Decrement operations.
-* ALU implemented as logic gates with mux chips removing the reliance on vintage End of life chips like the 74181
+* ALU implemented as logic gates with mux chips removing the reliance on vintage End of life (EOL) chips like the 74LS181
 * Dual stage Pipeline with simple logic decoding.
 * Dual bus support - limited but still usable.
 * MMU like features to address memory beyond 16-bit Address Bus range.
 
 ## Philosophical Goals
 
-* Use 74xx series TTL chips where possible in the core CPU design and Implementation.
+* Use 74HC/HCT/ALS series TTL chips where possible in the core CPU design and Implementation (avoid 74LSxxx). 
 * Aim for a clean and elegant design where possible.
 * As RISC like as possible.
 * Clean/Uniform instruction set design.
 * Modular approach rather than central control.
 * Modified Harvard Architecture - separate code, Stack and User RAM.
-* Well defined register usage similar to RISC-V and MIPs but not a direct implementation of tham.
+* Well defined register usage similar to RISC-V and MIPs but not a direct implementation of them.
 
 Most designs have similar goals to this so it fits within the Home Brew TTL Computer design ideals.
 
@@ -90,10 +92,12 @@ Current design Idea as of September 2025. I still need to drop this onto a bread
 
 Using an idea from the MIPS CPU, I have aimed for a fixed size instruction set that uses 2 bits as a "I-Type" field and have four separate Instruction registers (from a hardware perspective, think [74HC139](https://www.ti.com/lit/gpn/SN74HCT139) and 74HC574 Latches). This gives each of the four groups of instructions 6 bits or 64 different instructions per group.
 
-By grouping related Instructions together, the control logic can then be implemented in logic gates for many instructions without needing a decoding matrix. The decoding can also be passe donto the functional unit that the instructions apply to.
+By grouping related Instructions together, the control logic can then be implemented in logic gates for many instructions without needing EPROM style decoding. The decoding can also be passed onto the functional unit that the instructions apply to (where possible).
 This allows both a parallel pipeline design where instruction fetching continues on each 2nd cycle (unless paused) and segregates the control logic needed to handle just the signals for the instructions to be handled by that pipeline.
 
-The ISA details will be published soon, once the Assembler project is completed. But basically 2 bits for the I-Type and the remaining 6 bits for the range of instructions in each group gives 8 bits for Instructions and add in 6 bits for the register selection leaves 2 bits in the first 16-bit word. Immediate values could be an additional fetch if the instruction requires an immediate value.
+The ISA details are still in draft stage, once the Assembler project is completed. But basically 2 bits for the I-Type and the remaining 6 bits for the range of instructions in each group gives 8 bits for Instructions and add in 6 bits for the register selection leaves 2 bits in the first 16-bit word. Immediate values could be an additional fetch if the instruction requires an immediate value.
+
+When the design is expanded to 32 bits, the Immediate value can be the lower 16 bits.
 
 The ISA documentation is here: [isa.md](https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md)
 
