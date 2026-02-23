@@ -177,3 +177,7 @@ Soon to be released Assembler: https://github.com/z900collector/CPU32-Assembler
 # Schematics
 
 Still being finalized as I build modules. Will be released in KiCad and PDF formats soon.
+
+# Update - 2026-02-23
+
+Currently designing the ALU and Pipeline Logic, ordered more IC's to breadboard and will start breadboarding the IR logic and first pipeline.
