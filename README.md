@@ -165,7 +165,13 @@ Implemented on reset, using a special sequencer to perform SP->RD->WR->INC_SP-> 
 
 # ISA
 
-Currently documented in the Assembler: https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md
+
+The ISA has come under some sustained revisions to align with the Control Logic Decoding I am looking at implementing. Below is the Mapping of Instructions, many are not yet implemented in the Assembler (next task).
+
+![S16-TTL-CPU](2026-03-13-ISA-Table.png?raw=true)
+
+Previous Version of the ISA is located here, https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md
+
 
 # Software
 
