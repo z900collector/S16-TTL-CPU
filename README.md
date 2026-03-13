@@ -165,10 +165,15 @@ Implemented on reset, using a special sequencer to perform SP->RD->WR->INC_SP-> 
 
 # ISA
 
-
 The ISA has come under some sustained revisions to align with the Control Logic Decoding I am looking at implementing. Below is the Mapping of Instructions, many are not yet implemented in the Assembler (next task).
 
+See below for a description of the key points:
+
 ![S16-TTL-CPU](2026-03-13-ISA-Table.png?raw=true)
+
+Bits 7 & 6 are the "Type" bits, as you can see there are four basic groups colour coded in the PNG file, each group has 4 sub-groups using bits 5 & 4, the Instruction Decoding (ID) logic will be hardwired in each pipeline to reduce the propagation delays. The bulk of the instructions can be decoded with a 74HC138 decoder needing only 3 bits and as stated elsewhere the Groups can be decoded with a 74HC139 decoder to select the required pipeline.
+
+As the Instructions grow, a bit bit decoding will be required in 1 or more groups and there is still more work to be done as the ID stages are still pencil sketches as I find design changes to the ISA occuring. I will also add a separate page for each ID Pipeline stage.
 
 Previous Version of the ISA is located here, https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md
 
