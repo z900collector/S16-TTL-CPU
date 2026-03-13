@@ -89,9 +89,8 @@ The following topics are where performance can be improved allowing multiple tas
 ## R-BUS
 Rather than a single bus for register access, I am aiming to provide two data buses, the conventional D-Bus and a separate register bus called "R-Bus" for register-to-register moves. This also includes moving data to and from the Stack Pointer Register and Program Counter Register.
 
-The Register will also include an Increment/Decrement capability to increase the speed of loop counting and Rotate/Shift Operations. Since logic gates are relatively cheap, adding bitwise logical operations such as AND, OR, XOR etc will also enhance each register.
 
-For arithmetic ALU operations like ADD, SUB, DIV and MUL, I can dedicate a register as the ALU results register (maybe R7) and use the D-Bus and R-Bus as inputs to the Arithmetic ALU like other designs.
+For arithmetic ALU operations like ADD, SUB, DIV and MUL, I can dedicate a register as the ALU results register (at this stage it's R0) and use the D-Bus and R-Bus as inputs to the Arithmetic ALU like other designs.
 
 Current design Idea as of September 2025. I still need to drop this onto a bread board and complete the register control logic.
 ![S16-TTL-CPU](REG-Signals-2025-09-09.jpg?raw=true)
@@ -120,23 +119,27 @@ So far the Identified Groups are:
 
 Influenced by the MIPS CPU again, my initial design has registers R0 to R7. Having eight (8) registers means having 3 bits for a source and 3 bits for a destination register format. Rather than have the Main Controller/Sequencer (MCS) control the registers, the MCS would signal the registers of an operation via a Register Control Bus and the Register Controller/Sequencer (RCS) does the task. This allows the Instruction fetch cycle to re-occur directly after the RCS takes over (it would do it's task(s) during the fetch, decode cycle), then be ready at the Execute cycle for the next register operation if there was one directly after the current one. 
 
+The first four Registers (R0-R3) will also include an Increment/Decrement capability to increase the speed of loop counting and Rotate/Shift Operations. Since logic gates are relatively cheap, adding bitwise logical operations such as AND, OR, XOR etc will also enhance each register.
+
+The remaining four (4) registers will not have the ALU functionalit built in but will have the ability to fetch and hold the SP and PC values via a single instruction (LDSP and LDPC).
+
 ### Possible Issues ###
 
 There maybe timing issues to still debug but once I build the register modules, the design is 95% complete and is ready to prototype.
 
 ### Localised ALU functions
 
-Registers R0-R7 will include the ability to perform the following instructions that would typically be handled by an ALU:
+Registers R0-R3 will include the ability to perform the following instructions that would typically be handled by an ALU:
 * INC / DEC
 * BSET / BCLR / BTST
 * Shifts / Rotates
 * Zero / Invert / Bitwise OR / AND / XOR operations
 
-The flags from these operations would be pushed to a global flags register which is where the Instruction Registers would look if needed.
+The flags from these operations would be pushed to a global flags register which is where the Instruction Registers would look if needed. Flags are latched at the ID stage.
 
 ### Secondary register latch
 
-The registers would have a secondary register latch to enable the basic ALU operations to be performed locally, the 2nd latch is loaded by an XFER instruction (XFER Rs, Rd) This would be different to a "LD" instruction which moves data into the "A" Latch of a Register. The XFER would load "A" and "B" at the same time. A logic operation would then be an XFER, followed by an LD, followed by the ALU operation. Results get written back to the "A" latch or if coded, transferred to another register using the R-BUS. The key points are the XFER is in progress as the LD is being fetched and decoded, then at the end of the LD, the ALU operation could execute. As it is occurring, another Instruction fetch is already in progress.
+The first four registers have a secondary register latch ("B" Latch) to enable the basic ALU operations to be performed locally, the 2nd latch is loaded by an XFER instruction (XFER Rs, Rd) This would be different to a "LD" instruction which moves data into the "A" Latch of a Register. The XFER would load "A" and "B" at the same time. A logic operation would then be an XFER, followed by an LD, followed by the ALU operation. Results get written back to the "A" latch or if coded, transferred to another register using the R-BUS. The key points are the XFER is in progress as the LD is being fetched and decoded, then at the end of the LD, the ALU operation could execute. As it is occurring, another Instruction fetch is already in progress.
 
 ## Separate Stack RAM
 
@@ -161,10 +164,10 @@ Where designs have used the ALU to implement ADD/SUB operations for the program 
 
 I am still working on the best way of moving data between code space and data space, for the time being the LD and MV instructions can do this as the PC and MAR are separate. I could use a move coplex instruction to move blocks of data for things like tables and strings/character data that might be needed in a program.
 
-## Implement Microcode in SRAM 
+## Implement Microcode in SRAM - (Wish List Item)
 
 Due to the latency of EEPROMs, the use of 10ns SRAMs would increase both code execution and even instruction decoding if I use classic designs.
-We would need to backfill the SRAM's on reset from an EPROM. The result, Microcode code access goes from 120ns+ to 10ns depending on chip selection. My initial sketchs appear to be valid, but I will know when I bread board it and decided on the best way to do this on reset.
+To implement code in SRAM, the boot process would need to backfill the SRAM on reset from an EEPROM. The result, Microcode code access goes from 50ns+ to 10ns depending on chip selection. My initial sketchs appear to be valid, but I will know when I bread board it and decided on the best way to do this on reset.
 
 ### Theory
 
@@ -191,12 +194,27 @@ Previous Version of the ISA is located here, https://github.com/z900collector/CP
 As I narrowed down on the width of the CPU, I decided an assembler project would highlight any issues as well as clarify the hardware needed to support the ISA. So I developed an Assembler. 
 Having written 8080/8085/z80 and 68020 assembler code back in the 70's and 80's as an Embedded Systems Engineer in my younger days, I decided I would borrow ideas from these CPU's as well as the MIPS and RISC-V designs.
 
-Soon to be released Assembler: https://github.com/z900collector/CPU32-Assembler
+You can find the "Soon to be Completed" Assembler here: https://github.com/z900collector/CPU32-Assembler
 
 # Schematics
 
 Still being finalized as I build modules. Will be released in KiCad and PDF formats soon.
 
+So far I have the PC drawn up and am working on the registers and User RAM. Everything else is sketches on paper (lots!).
+
 # Update - 2026-02-23
 
 Currently designing the ALU and Pipeline Logic, ordered more IC's to breadboard and will start breadboarding the IR logic and first pipeline.
+
+# Update - 2026-03-13
+
+ISA looking fairly stable, circuit design underway in KiCAD and breadboarding commenced.
+
+More to come!
+
+If you need to cotact me:
+
+sid DOT young AT gmail DOT com
+Use SS-16 at the start of the Subject line (put them in square brackets) as I get a lot of emails every day and I can filter these with priority.
+
+
