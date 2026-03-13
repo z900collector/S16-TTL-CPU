@@ -1,11 +1,11 @@
 # S16-TTL-CPU
-A superscalar TTL CPU using HC/HCT Logic - 16 Bit version
+A superscalar TTL CPU using 74HC/HCT Logic - 16 Bit version
 
-Updated 2026-01-28
+Updated 2026-03-13
 
 # Introduction
 
-I have been inspired to design this TTL based CPU after decades of building and writting code for embedded systems. I started in 1976 when the z80 came out and worked on a range of CPU's up till the around the 2000's when I focused on my  Systems Engineering career and left smaller processors behind. In 2024 I saw a TTL CPU page and was wrapped, prior to starting this design I researched all the available designs on the Internet to get a clear view of what has been built before, an understanding of the history of TTL Home Brew Computers and the philosophy that motivates people to spend a huge amount of hours and brain power on designing and building these projects.
+I have been inspired to design this TTL based CPU after decades of building and writting code for embedded systems. I started in 1976 when the z80 came out and worked on a range of CPU's up till the around the 2000's when I focused on my Systems Engineering career and left smaller processors behind. In 2024 I saw a TTL CPU page and was wrapped, prior to starting this design I researched all the available designs on the Internet to get a clear view of what has been built before, an understanding of the history of TTL Home Brew Computers and the philosophy that motivates people to spend a huge amount of hours and brain power on designing and building these projects.
 
 # The current state of most TTL CPU Projects
 
@@ -24,10 +24,14 @@ Most simple TTL CPU designs have the following:
 * Slightly more advanced designs have a modified Harvard Architecture. With separate RAM and EPROM address spaces.
 * Low clock frequency typical < 4MHz
 
-However, there are huge bottlenecks in these designs, **they do work and work well** for what they are but I wanted something:
-* Faster >20Mhz <50Mhz,
+However, there are huge bottlenecks in these designs, **they do work and work well** for what they are, but I wanted something:
+
+* Faster >10Mhz <50Mhz,
 * More sophisticated design (take as many features from RISC based designs) and
 * More modular in it's design, think "Functional Units".
+* Pipelined and parallel operations where possible.
+* Easy to increase the ISA capabilities without having to burn EEPROMS.
+* Pure 74xx series chips, no PLA, FPGA etc
 
 ## The Issues with current designs
 
@@ -35,11 +39,15 @@ In basic point form, the issues that are common to most TTL CPU designs are:
 
 * EPROMs have delay times of upwards of 100-150ns or worse thus limiting clock timing.
 * Single Bus designs cause a bottleneck, particularly with ALU operations.
-* ALU operations often rely on [74181](https://www.righto.com/2017/03/inside-vintage-74181-alu-chip-how-it.html) or the [74283](https://www.ti.com/lit/gpn/SN54S283) 4-bit binary adder with support chips.
+* ALU operations often rely on [74181](https://www.righto.com/2017/03/inside-vintage-74181-alu-chip-how-it.html) which is very much a legacy chip.
 * Most have a single Instruction fetch/decode and execute phase with no overlap.
 * Single control unit with complex control line distribution. In most cases the need for more control signals means adding more EPROMS to breakout the individual signals.
 * Registers as basic latches without any additional logic capability.
 * RAM, Code and Stack in one address space.
+
+Some concessions:
+
+* The [74283](https://www.ti.com/lit/gpn/SN54S283) 4-bit binary adder is still manufactured and easy to obtain, so this is acceptable to me.
 
 There are some slightly more advanced designs, that have one or more of these features:
 
@@ -173,7 +181,7 @@ See below for a description of the key points:
 
 Bits 7 & 6 are the "Type" bits, as you can see there are four basic groups colour coded in the PNG file, each group has 4 sub-groups using bits 5 & 4, the Instruction Decoding (ID) logic will be hardwired in each pipeline to reduce the propagation delays. The bulk of the instructions can be decoded with a 74HC138 decoder needing only 3 bits and as stated elsewhere the Groups can be decoded with a 74HC139 decoder to select the required pipeline.
 
-As the Instructions grow, a bit bit decoding will be required in 1 or more groups and there is still more work to be done as the ID stages are still pencil sketches as I find design changes to the ISA occuring. I will also add a separate page for each ID Pipeline stage.
+As the Instructions grow, a change in the decoding stage will be required in one or more groups and there is still more work to be done as the ID stages are still pencil sketches as I find design changes to the ISA occuring. I will also add a separate page for each ID Pipeline stage as the project progresses.
 
 Previous Version of the ISA is located here, https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md
 
