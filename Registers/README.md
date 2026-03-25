@@ -74,8 +74,13 @@ The first four registers have a secondary register latch ("B" Latch) to enable t
 
 Rather than a single bus for register access, I am aiming to provide two data buses, the conventional D-Bus and a separate register bus called "R-Bus" for register-to-register moves. This also includes moving data to and from the Stack Pointer Register and Program Counter Register.
 
+Logisim Image of Advanced Register - 1st cut!
 
+![Reg-Image](Latch_A_to_RBUS.png)
 For arithmetic ALU operations like ADD, SUB, DIV and MUL, I can dedicate a register as the ALU results register (at this stage it's R0) and use the D-Bus and R-Bus as inputs to the Arithmetic ALU like other designs.
+
+
+Reference Drawing
 
 Current design Idea as of September 2025. I still need to drop this onto a bread board and complete the register control logic.
 ![S16-TTL-CPU](REG-Signals-2025-09-09.jpg?raw=true)
