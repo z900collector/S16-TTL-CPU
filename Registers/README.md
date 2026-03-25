@@ -1,4 +1,4 @@
-#SS16-TTL-CPU - Registers#
+#Registers#
 
 Updated 2026-03-25
 
