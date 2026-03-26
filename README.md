@@ -1,5 +1,5 @@
 # SS16-TTL-CPU
-A superscalar TTL CPU using 74HC/HCT Logic - 16 Bit version
+An attempt at building a superscalar TTL CPU using 74HC/HCT Logic - 16 Bit version
 
 Updated 2026-03-13
 
