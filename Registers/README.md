@@ -42,6 +42,8 @@ The TRAN instruction tansfers the Value in the "A" Latch into the "B" Latch.
 
 If "Rd" is specified as R4 to R7 then no operation is performed.
 
+Circuit Simulation of R0 register using Logisim. Additional components required still.
+
 ![S16-TTL-CPU](Register_R0.png?raw=true)
 
 ### R4-R7 ###
@@ -78,21 +80,23 @@ The flags from these operations would be pushed to a global flags register which
 
 The first four registers have a secondary register latch ("B" Latch) to enable the basic ALU operations to be performed locally, the 2nd latch is loaded by an XFER instruction (XFER Rs, Rd) This would be different to a "LD" instruction which moves data into the "A" Latch of a Register. The XFER would load "A" and "B" at the same time. A logic operation would then be an XFER, followed by an LD, followed by the ALU operation. Results get written back to the "A" latch or if coded, transferred to another register using the R-BUS. The key points are the XFER is in progress as the LD is being fetched and decoded, then at the end of the LD, the ALU operation could execute. As it is occurring, another Instruction fetch is already in progress.
 
+## Register Buses ##
 
-### R-BUS ###
+Each Register is connected via a standard Data Bus (A.K.A. DBUS) that all TTL CPU's have. In addition, there is an **RBUS** specifically connecting all registers.
 
-Rather than a single bus for register access, I am aiming to provide two data buses, the conventional D-Bus and a separate register bus called "R-Bus" for register-to-register moves. This also includes moving data to and from the Stack Pointer Register and Program Counter Register.
+### The R BUS ###
 
-Logisim Image of Advanced Register - 1st cut!
+The register bus (RBUS) is used for register-to-register moves. This also includes moving data to and from the Stack Pointer (SP) Register and Program Counter (PC) Register.
 
-![Reg-Image](Latch_A_to_RBUS.png)
+The RBUS also links to the primary ALU along with the DBUS.
+
 For arithmetic ALU operations like ADD, SUB, DIV and MUL, I can dedicate a register as the ALU results register (at this stage it's R0) and use the D-Bus and R-Bus as inputs to the Arithmetic ALU like other designs.
 
 
 Reference Drawing
 
 Current design Idea as of September 2025. I still need to drop this onto a bread board and complete the register control logic.
-![S16-TTL-CPU](REG-Signals-2025-09-09.jpg?raw=true)
+![S16-TTL-CPU](/REG-Signals-2025-09-09.jpg?raw=true)
 
 ## Terminology ##
 
