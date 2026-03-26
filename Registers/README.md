@@ -35,6 +35,7 @@ See the ISA for more details, but basically it's format is:
  **XFER Rs,Rd** - where "Rs" is the "Source" register and "Rd" is the "Destination" register.
 
 This instruction allows the "A" Latch value of any other register to be loaded into the destination Register's "B" Latch so "bitwise" logic operations can be performed. You cannot read back the value of the "B" Latch.
+
  **TRAN R**
 
 The TRAN instruction tansfers the Value in the "A" Latch into the "B" Latch.
