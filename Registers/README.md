@@ -93,9 +93,10 @@ The RBUS also links to the primary ALU along with the DBUS.
 For arithmetic ALU operations like ADD, SUB, DIV and MUL, I can dedicate a register as the ALU results register (at this stage it's R0) and use the D-Bus and R-Bus as inputs to the Arithmetic ALU like other designs.
 
 
-Reference Drawing
+## Reference Drawing ##
 
-Current design Idea as of September 2025. I still need to drop this onto a bread board and complete the register control logic.
+Current design Idea as of September 2025 is still current. While the initial circuit simulation looks good, I still need to drop this onto a bread board and complete the register control logic.
+
 ![S16-TTL-CPU](/REG-Signals-2025-09-09.jpg?raw=true)
 
 ## Terminology ##
