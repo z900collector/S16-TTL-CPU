@@ -1,14 +1,12 @@
 # Registers #
 
-Updated 2026-03-25
+Updated 2026-03-26
 
 ## Register Overview ##
 
 Influenced by a range of CPU designs, I have settled on the following specifications for the Registers.
 
-There are eight (8) registers identified as R0 to R7.
-
-Having eight registers means having 3 bits for a source and 3 bits for a destination register in the ISA format. Provision has been made to go to 4 bits allowing 16 registers in a more advanced design.
+There are eight (8) registers, identified as R0 to R7.
 
 Registers R0-R3 will include the ability to perform the following instructions that would typically be handled by an ALU:
 
@@ -24,16 +22,26 @@ Registers 4-7 will basically be latches but connected to at least 2 busses. The 
 * Stack Counter Latches.
 * Future expansion (maybe I/O instructions).
 
+Having eight registers means having 3 bits for a source and 3 bits for a destination register in the ISA format. Provision has been made to go to 4 bits allowing 16 registers in a more advanced design.
+
 ### R0-R3 ###
 
 R0 to R3 are known as "Advanced Registers" as they do more than just hold a value.
-In order to implement basic bitwise operations in the first four registers, a second operand in required, this is provided by having an additional latch. This latch is identified as the "B" Latch and can be set using the 'XFER' instruction.
+In order to implement basic bitwise operations in the first four registers, a second operand in required, this is provided by having an additional latch.
+
+This latch is identified as the "B" Latch and can be set using the "XFER" and "TRAN" instruction.
 See the ISA for more details, but basically it's format is:
 
- XFER Rs,Rd - where Rs is the "source" register and Rd is the destination register.
+ **XFER Rs,Rd** - where "Rs" is the "Source" register and "Rd" is the "Destination" register.
 
 This instruction allows the "A" Latch value of any other register to be loaded into the destination Register's "B" Latch so "bitwise" logic operations can be performed. You cannot read back the value of the "B" Latch.
-If Rd is specified as R4 to R7 then no operation is performed.
+ **TRAN R**
+
+The TRAN instruction tansfers the Value in the "A" Latch into the "B" Latch.
+
+If "Rd" is specified as R4 to R7 then no operation is performed.
+
+![S16-TTL-CPU](Register_R0.png?raw=true)
 
 ### R4-R7 ###
 
