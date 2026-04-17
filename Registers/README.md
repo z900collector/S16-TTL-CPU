@@ -36,13 +36,13 @@ See the ISA for more details, but basically it's format is:
 
 This instruction allows the "A" Latch value of any other register to be loaded into the destination Register's "B" Latch so "bitwise" logic operations can be performed. You cannot read back the value of the "B" Latch.
 
- **TRAN R**
+ **TRAN R** - This is a new instruction I thought up and is yet to be documented and tested. 
 
-The TRAN instruction tansfers the Value in the "A" Latch into the "B" Latch.
+The TRAN instruction tansfers the value in the "A" Latch into the "B" Latch. The logisim circuit fully supports this so I just need to add it into the ISA and work ut the control signals.
 
 If "Rd" is specified as R4 to R7 then no operation is performed.
 
-Circuit Simulation of R0 register using Logisim. Additional components required still.
+Circuit Simulation of R0 register using Logisim (Additional components required still).
 
 ![S16-TTL-CPU](Register_R0.png?raw=true)
 
@@ -95,7 +95,9 @@ For arithmetic ALU operations like ADD, SUB, DIV and MUL, I can dedicate a regis
 
 ## Reference Drawing ##
 
-Current design Idea as of September 2025 is still current. While the initial circuit simulation looks good, I still need to drop this onto a bread board and complete the register control logic.
+The current design from September 2025 is still current with some changes from Buffers to Latches. While the initial circuit simulation looks good, I still need to drop this onto a bread board and complete the register control logic.
+
+The diagram below will be updated to reflect the changes from Buffers to Latches.
 
 ![S16-TTL-CPU](/REG-Signals-2025-09-09.jpg?raw=true)
 
@@ -114,5 +116,5 @@ Current design Idea as of September 2025 is still current. While the initial cir
 
 ## Supporting Information ##
 
-The ISA documentation is here: [isa.md](https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md)
+The ISA documentation is here: (https://github.com/z900collector/S16-TTL-CPU/blob/main/ISA/README.MD)
 
