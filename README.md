@@ -1,7 +1,7 @@
 # SS16-TTL-CPU
 An attempt at building a superscalar TTL CPU using 74HC/HCT Logic - 16 Bit version
 
-Updated 2026-03-13
+Updated 2026-04-14
 
 # Introduction
 
@@ -106,7 +106,7 @@ The ISA details are still in draft stage, once the Assembler project is complete
 
 When the design is expanded to 32 bits, the Immediate value can be the lower 16 bits.
 
-The ISA documentation is here: [isa.md](https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md)
+The ISA documentation is here: (https://github.com/z900collector/S16-TTL-CPU/ISA/README.MD)
 
 So far the Identified Groups are:
 
@@ -130,6 +130,7 @@ There maybe timing issues to still debug but once I build the register modules, 
 ### Localised ALU functions
 
 Registers R0-R3 will include the ability to perform the following instructions that would typically be handled by an ALU:
+
 * INC / DEC
 * BSET / BCLR / BTST
 * Shifts / Rotates
@@ -137,15 +138,25 @@ Registers R0-R3 will include the ability to perform the following instructions t
 
 The flags from these operations would be pushed to a global flags register which is where the Instruction Registers would look if needed. Flags are latched at the ID stage.
 
-### Secondary register latch
+### Secondary Register Latch ##
 
-The first four registers have a secondary register latch ("B" Latch) to enable the basic ALU operations to be performed locally, the 2nd latch is loaded by an XFER instruction (XFER Rs, Rd) This would be different to a "LD" instruction which moves data into the "A" Latch of a Register. The XFER would load "A" and "B" at the same time. A logic operation would then be an XFER, followed by an LD, followed by the ALU operation. Results get written back to the "A" latch or if coded, transferred to another register using the R-BUS. The key points are the XFER is in progress as the LD is being fetched and decoded, then at the end of the LD, the ALU operation could execute. As it is occurring, another Instruction fetch is already in progress.
+The first four registers have a secondary register latch ("B" Latch) to enable the basic ALU operations to be performed locally, the 2nd latch is loaded by an XFER instruction (XFER Rs, Rd) This would be different to a "LD" instruction which moves data into the "A" Latch of a Register.
 
-## Separate Stack RAM
+The XFER would load from the "A" of Rs into the "B" of Rd at the same time. This would then be followed by the ALU operation. Results get written to an internal latch and then back into the "A" latch.
 
-Why does stack RAM need to be part of main memory? I asked myself this many times, logically a Stack is built from the top of RAM and works down as the stack grows and RAM usage grows upwards. If they meet, you are in trouble, but generally they are separate (conceptually) but share the same chips. If you split the stack RAM into a separate exclusive address space and have the SP register output to a "local" SP bus via some counter chips (74HC161/74HC191/74HC193), then include the control logic to manage PUSH, POP, CALL, RET and RSP (Reset SP) then you can do stack operations from registers while still having the Instruction Data Bus fetch and process more instructions, this should increase performance on stack operations. 
+The XFER instruction, combined with the "B" Latch is designed to speed up bitwise operations significantly as they can be done while the D-Bus is freed up to get the next instruction from Code RAM.
 
-### Theory
+## Separate Stack RAM ##
+
+Why does stack RAM need to be part of main memory?
+
+I asked myself this many times, logically a Stack is built from the top of RAM and works down as the stack grows and RAM usage grows upwards. If they meet, you are in trouble, but generally they are separate (conceptually) but share the same chips. 
+
+If you split the stack RAM into a separate exclusive address space and have the SP register output to a "local" SP bus via some counter chips (74HC161/74HC191/74HC193), then include the control logic to manage PUSH, POP, CALL, RET and RSP (Reset SP) then you can do stack operations from registers while still having the Instruction Data Bus fetch and process more instructions, this should increase performance on stack operations. 
+
+You can also execute stack operations independant of User RAM access as the stack uses the R-Bus while RAM is access using the D-Bus.
+
+### Theory ###
 
 On reset (or via the RSP Instruction) the stack is initialized to 0xFFFF using pull up resistors on the "D" inputs to the counters, the MR and /LOAD signals then set that address, the output of the counter chips drive the address bus for the SRAM. Only a CALL or RETurn requires the SRAM to present data back to the Main Data Bus. The PUSH and POP instructions would be "register" operations using the R-Bus.
 
@@ -174,47 +185,55 @@ To implement code in SRAM, the boot process would need to backfill the SRAM on r
 Implemented on reset, using a special sequencer to perform SP->RD->WR->INC_SP-> repeat sequence, then when complete, switch the buffers for the EPROM to open collector and the SRAM's take effect.
 
 
-# ISA
+# ISA #
 
-The ISA has come under some sustained revisions to align with the Control Logic Decoding I am looking at implementing. Below is the Mapping of Instructions, many are not yet implemented in the Assembler (next task).
+The ISA has come under some sustained revisions to align with the Control Logic Decoding I am looking at implementing. Below is the new loaction of the ISA docuemtnation including a spreadsheet.
+
+See: [ISA](/ISA/README.MD)
 
 See below for a description of the key points:
 
 ![S16-TTL-CPU](2026-03-13-ISA-Table.png?raw=true)
 
-Bits 7 & 6 are the "Type" bits, as you can see there are four basic groups colour coded in the PNG file, each group has 4 sub-groups using bits 5 & 4, the Instruction Decoding (ID) logic will be hardwired in each pipeline to reduce the propagation delays. The bulk of the instructions can be decoded with a 74HC138 decoder needing only 3 bits and as stated elsewhere the Groups can be decoded with a 74HC139 decoder to select the required pipeline.
 
-As the Instructions grow, a change in the decoding stage will be required in one or more groups and there is still more work to be done as the ID stages are still pencil sketches as I find design changes to the ISA occuring. I will also add a separate page for each ID Pipeline stage as the project progresses.
-
-Previous Version of the ISA is located here, https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md
+Previous Version of the ISA is located here, https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md this will be updated to point into the SS-16 project.
 
 
-# Software
+# Software #
 
 As I narrowed down on the width of the CPU, I decided an assembler project would highlight any issues as well as clarify the hardware needed to support the ISA. So I developed an Assembler. 
 Having written 8080/8085/z80 and 68020 assembler code back in the 70's and 80's as an Embedded Systems Engineer in my younger days, I decided I would borrow ideas from these CPU's as well as the MIPS and RISC-V designs.
 
 You can find the "Soon to be Completed" Assembler here: https://github.com/z900collector/CPU32-Assembler
 
-# Schematics
+# Schematics #
 
 Still being finalized as I build modules. Will be released in KiCad and PDF formats soon.
 
 So far I have the PC drawn up and am working on the registers and User RAM. Everything else is sketches on paper (lots!).
 
-# Update - 2026-02-23
+# Updates #
+
+## Update - 2026-02-23 ##
 
 Currently designing the ALU and Pipeline Logic, ordered more IC's to breadboard and will start breadboarding the IR logic and first pipeline.
 
-# Update - 2026-03-13
+## Update - 2026-03-13 ##
 
 ISA looking fairly stable, circuit design underway in KiCAD and breadboarding commenced.
 
 More to come!
 
+## Update - 2026-04-14 ##
+
+* Uploaded XLS file and moved ISA readme into a new ISA folder. 
+* Updated readme to reflect movement of instructions, some additions and some deleteions.
+
+
 If you need to cotact me:
 
 sid DOT young AT gmail DOT com
+
 Use SS-16 at the start of the Subject line (put them in square brackets) as I get a lot of emails every day and I can filter these with priority.
 
 
