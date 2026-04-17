@@ -78,7 +78,7 @@ Most designs have similar goals to this so it fits within the Home Brew TTL Comp
 
 In order to make the CPU faster, the design will need to implement a degree of parallelism and eliminate the slowest components, particulary EPROMS. 
 
-To avoid the path of CISC designs (think instruction bloat), it needs to be RISC like. 
+To avoid the path of CISC designs (think instruction bloat), the CPU needs to implement as many features of a RISC platform. To help achieve this, I have a fixed format Instruction Set Architecture (ISA) with 8 bits for instructions and 8 bits shared between Register based instructions, I/O instructions and special purpose instructions. See [SS-16 ISA](/ISA).
 
 To perform data writes simultaneously to code fetches, the CPU needs to implement a modified [Harvard Architecture](https://en.wikipedia.org/wiki/Harvard_architecture) design with a separate code and RAM space. Moving code to Register can be achieved using the MR instruction where as LD and ST instructions Load and Store to RAM
 
