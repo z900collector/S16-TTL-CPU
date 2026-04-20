@@ -106,7 +106,7 @@ The ISA details are still in draft stage, once the Assembler project is complete
 
 When the design is expanded to 32 bits, the Immediate value can be the lower 16 bits.
 
-The ISA documentation is here: [SS16-TTL-CPU](/ISA/README.MD)
+The ISA documentation is [here](/ISA/README.MD)
 
 So far the Identified Groups are:
 
