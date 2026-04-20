@@ -72,7 +72,7 @@ Most designs have similar goals to this so it fits within the Home Brew TTL Comp
 
 # Block Diagram (Still in design stage)
 
-![S16-TTL-CPU](Block-Diagram-2025-10-14.png?raw=true)
+![SS16-TTL-CPU](Block-Diagram-2025-10-14.png?raw=true)
 
 # CPU Features
 
@@ -93,7 +93,7 @@ Rather than a single bus for register access, I am aiming to provide two data bu
 For arithmetic ALU operations like ADD, SUB, DIV and MUL, I can dedicate a register as the ALU results register (at this stage it's R0) and use the D-Bus and R-Bus as inputs to the Arithmetic ALU like other designs.
 
 Current design Idea as of September 2025. I still need to drop this onto a bread board and complete the register control logic.
-![S16-TTL-CPU](REG-Signals-2025-09-09.jpg?raw=true)
+![SS16-TTL-CPU](REG-Signals-2025-09-09.jpg?raw=true)
 
 ## Instruction Groups
 
@@ -106,7 +106,7 @@ The ISA details are still in draft stage, once the Assembler project is complete
 
 When the design is expanded to 32 bits, the Immediate value can be the lower 16 bits.
 
-The ISA documentation is here: (https://github.com/z900collector/S16-TTL-CPU/ISA/README.MD)
+The ISA documentation is here: (https://github.com/z900collector/SS16-TTL-CPU/ISA/README.MD)
 
 So far the Identified Groups are:
 
@@ -193,7 +193,7 @@ See: [ISA](/ISA/README.MD)
 
 See below for a description of the key points:
 
-![S16-TTL-CPU](2026-03-13-ISA-Table.png?raw=true)
+![SS16-TTL-CPU](2026-03-13-ISA-Table.png?raw=true)
 
 
 Previous Version of the ISA is located here, https://github.com/z900collector/CPU32-Assembler/blob/main/isa.md this will be updated to point into the SS-16 project.
