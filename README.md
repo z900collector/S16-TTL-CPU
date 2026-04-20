@@ -106,7 +106,7 @@ The ISA details are still in draft stage, once the Assembler project is complete
 
 When the design is expanded to 32 bits, the Immediate value can be the lower 16 bits.
 
-The ISA documentation is here: (https://github.com/z900collector/SS16-TTL-CPU/ISA/README.MD)
+The ISA documentation is here: [SS16-TTL-CPU](/ISA/README.MD)
 
 So far the Identified Groups are:
 
@@ -189,7 +189,7 @@ Implemented on reset, using a special sequencer to perform SP->RD->WR->INC_SP-> 
 
 The ISA has come under some sustained revisions to align with the Control Logic Decoding I am looking at implementing. Below is the new loaction of the ISA docuemtnation including a spreadsheet.
 
-See: [ISA](/ISA/README.MD)
+See: [Instruction set Architecture](/ISA/README.MD)
 
 See below for a description of the key points:
 
